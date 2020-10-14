@@ -27,24 +27,20 @@ class TodoApp extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  componentDidMount(){
-    const rootRef = firebase.database().ref(); //.child('react')
-    const itemsRef = rootRef.child('text');
-    itemsRef.on('value', snap=> {
-      const newItem = {
-        text: snap.val(),
-        id: Date.now()
-      };
-      //TodoList items=this.state.items;
-      // this.setState({
-      //   //text: snap.val
-      //   items: self.concat(newItem),
-      //   text: ''
-      // });
-      this.setState(state => ({
-        items: state.items.concat(newItem),
-        text: ''
-      }));
+  componentDidMount() {
+    const itemsRef = firebase.database().ref('text');
+    itemsRef.on('value', (snapshot) => {
+      let items = snapshot.val();
+      let newState = [];
+      for (let item in items) {
+        newState.push({
+          id: items[item].id,
+          text: items[item].text,
+        });
+      }
+      this.setState({
+        items: newState
+      });
     });
   }
 
@@ -79,14 +75,19 @@ class TodoApp extends React.Component {
     if (this.state.text.length === 0) {
       return;
     }
+    const itemsRef = firebase.database().ref('text');
     const newItem = {
       text: this.state.text,
       id: Date.now()
     };
-    this.setState(state => ({
-      items: state.items.concat(newItem),
-      text: ''
-    }));
+    itemsRef.push(newItem);
+//    this.setState(state => ({
+//      items: state.items.concat(newItem),
+//      text: ''
+//    }));
+
+
+
   }
 }
 
