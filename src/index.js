@@ -9,6 +9,9 @@ import './index.css';
 import * as firebase from 'firebase';
 import 'firebase/auth';
 
+import DemoApp from './DemoApp'
+import './main.css'
+
 var config = {
   apiKey: "AIzaSyAbrPremBQusjYoKqKfTcVHwxuw-Q8ikHw",
   authDomain: "booked-8586e.firebaseapp.com",
@@ -52,7 +55,7 @@ firebase.auth().onAuthStateChanged(function(user){
 				var errorEmail = error.email;
 				// The firebase.auth.AuthCredential type that was used.
 				var credential = error.credential;
-				
+
 				//Output line for error variables to silence unused var warnings
 				alert(errorCode + errorMessage + errorEmail + credential);
 		});
@@ -101,6 +104,9 @@ class TodoApp extends React.Component {
           <button>
             Add #{this.state.items.length + 1}
           </button>
+          <button
+          onClick={gotoCalendar}
+          >View Calendar</button>
         </form>
       </div>
     );
@@ -147,3 +153,11 @@ ReactDOM.render(
   <TodoApp />,
   document.getElementById('root')
 );
+
+function gotoCalendar(){
+setTimeout(() => {  ReactDOM.render(
+  <DemoApp />,
+  //document.body.appendChild(document.createElement('root'))
+  document.getElementById('root')
+); }, 1000);
+}
