@@ -104,11 +104,12 @@ class TodoApp extends React.Component {
           <button>
             Add #{this.state.items.length + 1}
           </button>
-          <button
-          onClick={gotoCalendar}
-          >View Calendar</button>
         </form>
+        <button
+        onClick={gotoCalendar}
+        >View Calendar</button>
       </div>
+
     );
   }
 
