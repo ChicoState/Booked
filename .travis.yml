@@ -7,5 +7,6 @@ cache:
 install:
   - yarn
 script:
+  - yarn add @fullcalendar/react
   - npm test
   - npm run build
