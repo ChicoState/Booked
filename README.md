@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ChicoState/Booked.svg?branch=main)](https://travis-ci.org/ChicoState/Booked)
+
 CSCI 430 Booked Project Initial Code Developed from React Todo Example Code
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
