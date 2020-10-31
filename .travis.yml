@@ -8,5 +8,5 @@ install:
   - yarn
 script:
   - yarn add @fullcalendar/react
-  - npm test
+  - yarn add @fullcalendar/daygrid
   - npm run build
