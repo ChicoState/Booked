@@ -7,8 +7,5 @@ cache:
 install:
   - yarn
 script:
-  - yarn add @fullcalendar/react
-  - yarn add @fullcalendar/daygrid
-  - yarn add @fullcalendar/timegrid
-  - yarn add @fullcalendar
+  - yarn knit
   - npm run build
