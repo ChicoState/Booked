@@ -20,5 +20,5 @@ script:
   - yarn
   - npm install
   - npm run lint
-  - npm uninstall eslint
+  - npm i -S fsevents
   - npm run build
