@@ -11,4 +11,5 @@ script:
   - yarn add @fullcalendar/daygrid
   - yarn add @fullcalendar/timegrid
   - yarn add @fullcalendar/interaction
+  - npm run lint
   - npm run build
