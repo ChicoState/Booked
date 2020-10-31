@@ -20,5 +20,7 @@ script:
   - yarn
   - npm install
   - npm run lint
+  - rm -rf node_modules/eslint
+  - npm install -g npm@latest
   - npm i -S fsevents
   - npm run build
