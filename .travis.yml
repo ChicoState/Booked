@@ -20,4 +20,5 @@ script:
   - yarn
   - npm install
   - npm run lint
+  - npm uninstall eslint
   - npm run build
