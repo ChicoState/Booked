@@ -9,6 +9,7 @@ install:
 script:
   - yarn add --dev eslint
   - yarn add --dev eslint-config-standard
+  - yarn add --dev eslint-config-react-app
   - yarn add --dev eslint-plugin-node eslint-plugin-react
   - yarn add @fullcalendar/react
   - yarn add @fullcalendar/daygrid
