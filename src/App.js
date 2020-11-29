@@ -1,7 +1,7 @@
 import React from 'react';
 import Home from "./Home";
 import CalApp from "./calApp";
-
+import AuthControl from "./authenticate";
 //import './main.css';
 
 import {
@@ -23,7 +23,9 @@ const App = () => {
             <Link to="/calender">Calender</Link>
           </li>
           <li>
-            <Link to="/signin">Sign in</Link>
+            {/*<Link to="/signin">Sign in</Link>*/}
+            {/*<Router exact path="/authentication" component={AuthControl} />*/}
+            <AuthControl />
           </li>
           </ul>
         <hr />
