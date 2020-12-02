@@ -6,83 +6,73 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { createEventId } from './event-utils'
-
-//import Moment from 'react-moment';
-
 import './index.css';
-
-import * as firebase from 'firebase';
-import 'firebase/auth';
-
-//import TodoApp from './DemoApp'
-
-
-//var addedEvents = [];
+import app from "./firebase";
+import firebase from "./firebase";
+import 'firebase/database';
 
 export default class CalApp extends React.Component {
 
-  state = {
-    weekendsVisible: true,
-    currentEvents: []
+  constructor(props) {
+    super(props);
+      this.state = {
+       weekendsVisible: true,
+       isSignedIn : false,
+       currentEvents: [],
+       items: [],
+       text: '',
+     }
   }
 
-  render() {
-
-    const itemsRef = firebase.database().ref('text');
-
-    itemsRef.on('value', (snapshot) => {
-      let items = snapshot.val();
-      let newState = [];
+loadDB() {
+  const itemsRef = app.database().ref('text');
+  itemsRef.on('value', (snapshot) => {
+    let items = snapshot.val();
+    let newState = [];
+    this.state.currentEvents = [];
+    if(firebase.auth().currentUser) {
       for (let item in items) {
-        newState.push({
-          id: items[item].id,
-          text: items[item].text,
-        });
-        //let todayStr = new Date().toISOString().replace(/T.*$/, ''); // YYYY-MM-DD of today
-        const dateInMillis  = items[item].id;
-        //var date = new Date(dateInMillis).toLocaleDateString() + ' at ' + new Date(dateInMillis).toLocaleTimeString();
-        var date = new Date(dateInMillis);
-        //var date = new Date(dateInMillis).toLocaleDateString();
-        //date = Moment.moment(date,'YYYY-MM-DD');
-        //let dayStr = date.replace(/T.*$/, '');
-        let dayStr = date;
-  //       let dayStr = Intl.DateTimeFormat('en-US',{
-  // year: 'numeric',
-  // month: 'short',
-  // day: '2-digit' }).format(date);
-        //alert(dayStr);
-        //alert(date);
-        var addEvents =
-          {
-            id: createEventId(),
-            title: items[item].text,
-            start: dayStr,
-            end: dayStr + 'T12:00:00'
-          };
-        //this.state.currentEvents.push(addEvents);
-        //alert(addEvents.start);
-        //alert(todayStr);
-        this.state.currentEvents.push(addEvents);
-        // let title = items[item].text;
-        // let calendarApi = this.view.calendar;
-        // //
-        // // calendarApi.unselect() // clear date selection
-        // //
-        //  if (title) {
-        //    calendarApi.addEvent({
-        //      id: createEventId(),
-        //      title,
-        //      start: items[item].id,
-        //      end: items[item].id + 'T12:00:00'
-        //   });
-        // }
-      };
-      //alert(this.state.currentEvents.length);
+        if(items[item].uid===firebase.auth().currentUser.uid) {
+          newState.push({
+            id: items[item].id,
+            text: items[item].text,
+            });
+            const dateInMillis  = items[item].id;
+            var date = new Date(dateInMillis);
+            let dayStr = date;
+            var addEvents =
+              {
+                id: createEventId(),
+                title: items[item].text,
+                start: dayStr,
+                end: dayStr + 'T12:00:00'
+              };
+            this.state.currentEvents.push(addEvents);
 
-      //this.setState({
-      //  items: newState
-      //});
-    });
+          };
+        };
+      };
+  });
+}
+
+componentDidMount = () => {
+  firebase.auth().onAuthStateChanged(user => {
+    this.setState({ isSignedIn: !!user})
+    console.log("user", user)
+  })
+  this.loadDB();
+}
+
+componentDidUpdate(prevProps,prevState) {
+  if (this.state.isSignedIn !== prevState.isSignedIn) {
+    this.loadDB();
+  }
+}
+
+
+
+  render() {
+    this.loadDB();
     return (
       <div className='demo-app'>
         {this.renderSidebar()}
@@ -100,16 +90,11 @@ export default class CalApp extends React.Component {
             selectMirror={true}
             dayMaxEvents={true}
             weekends={this.state.weekendsVisible}
-            initialEvents={this.state.currentEvents} // alternatively, use the `events` setting to fetch from a feed
+            events={this.state.currentEvents}
             select={this.handleDateSelect}
-            eventContent={renderEventContent} // custom render function
+            eventContent={renderEventContent}
             eventClick={this.handleEventClick}
-            eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
-            /* you can update a remote database when these fire:
-            eventAdd={function(){}}
-            eventChange={function(){}}
-            eventRemove={function(){}}
-            */
+            eventsSet={this.handleEvents}
           />
         </div>
       </div>
