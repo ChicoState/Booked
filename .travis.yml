@@ -1,0 +1,25 @@
+language: node_js
+node_js:
+  - "stable"
+cache:
+  directories:
+    - node_modules
+install:
+  - yarn
+script:
+  - rm -rf node_modules
+  - yarn add --dev eslint
+  - yarn add --dev eslint-config-standard
+  - yarn add --dev eslint-config-react-app
+  - yarn add --dev eslint-plugin-node eslint-plugin-react
+  - yarn add @fullcalendar/react
+  - yarn add @fullcalendar/daygrid
+  - yarn add @fullcalendar/timegrid
+  - yarn add @fullcalendar/interaction
+  - npm install --save-dev eslint-config-react-app @typescript-eslint/eslint-plugin@^4.0.0 @typescript-eslint/parser@^4.0.0 babel-eslint@^10.0.0 eslint@^7.5.0 eslint-plugin-flowtype@^5.2.0 eslint-plugin-import@^2.22.0 eslint-plugin-jsx-a11y@^6.3.1 eslint-plugin-react@^7.20.3 eslint-plugin-react-hooks@^4.0.8
+  - npm install eslint-plugin-promise@latest --save-dev
+  - yarn
+  - npm install
+  - npm run lint
+  - npm install -g npm@latest
+  - npm run build

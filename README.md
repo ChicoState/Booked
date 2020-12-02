@@ -1,6 +1,71 @@
+[![Build Status](https://travis-ci.org/ChicoState/Booked.svg?branch=main)](https://travis-ci.org/ChicoState/Booked)
+
 CSCI 430 Booked Project Initial Code Developed from React Todo Example Code
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Package Manager for required dependancies/permission
+
+In the project directory, run: (Debian/Ubuntu Linux)
+
+### `curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list`
+
+Configures the repository
+
+### `sudo apt update && sudo apt install yarn`
+
+Update package info and install package
+
+### `sudo apt update && sudo apt install --no-install-recommends yarn`
+
+You can avoid the node installation if using nvm with this command(not used in this project)
+
+
+## Yarn Path Setup
+
+If Yarn is not found in your PATH, follow these steps to add it and allow it to be run from anywhere.
+
+Note: your profile may be in your .profile, .bash_profile, .bashrc, .zshrc, (etc)
+
+Add this to your profile:
+
+### `export PATH="$PATH:/opt/yarn-[version]/bin"` (the path may vary depending on where you extracted Yarn to)
+
+In the terminal, log in and log out for the changes to take effect
+
+To have access to Yarn’s executables globally, you will need to set up the PATH environment variable in your terminal. To do this, add: `export PATH="$PATH: 'yarn global bin' "` to your profile, or if you use Fish shell, simply run the command `set -U fish_user_paths (yarn global bin) $fish_user_paths`
+
+Test if yarn is installed by running 
+
+### `yarn --version`
+
+## Starting a new yarn project in app directory
+
+### `yarn init`
+
+## Adding additional dependencies
+
+### `yarn add [package] --dev` 
+### `yarn add [package] --peer`
+### `yarn add [package] --optional`
+
+## Upgrading a dependency
+
+### `yarn upgrade [package]`
+### `yarn upgrade [package]@[version]`
+### `yarn upgrade [package]@[tag]`
+
+## Removing a dependency`
+
+### `yarn remove [package]`
+
+## Installing all the dependencies of project
+
+### `yarn`
+
+or
+
+### `yarn install`
 
 ## Available Scripts
 
@@ -68,3 +133,14 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 ### `npm run build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+
+### For Hosting
+sudo npm install -g firebase-tools
+firebase login
+npm run build
+firebase init
+(note for init use build as directory not public and do not override index.html)
+firebase deploy
+
+
+https://booked-8586e.web.app/
