@@ -71,7 +71,8 @@ loadDB() {
     //let button = <button onClick={this.status}>TEST</button>
 
     return (
-      <div>
+      this.state.isSignedIn
+      ?<div>
         <h3>TODO</h3>
         <TodoList items={this.state.items} />
         <form onSubmit={this.handleSubmit}>
@@ -88,6 +89,9 @@ loadDB() {
           </button>
         </form>
       </div>
+      :
+        <div></div>
+
 
     );
   }

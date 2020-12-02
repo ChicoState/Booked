@@ -29,7 +29,6 @@ loadDB() {
   itemsRef.on('value', (snapshot) => {
     let items = snapshot.val();
     let newState = [];
-    this.state.currentEvents = [];
     if(firebase.auth().currentUser) {
       for (let item in items) {
         if(items[item].uid===firebase.auth().currentUser.uid) {
@@ -47,12 +46,11 @@ loadDB() {
                 start: dayStr,
                 end: dayStr + 'T12:00:00'
               };
-            this.state.currentEvents.push(addEvents);
-
+           this.state.currentEvents.push(addEvents);
           };
         };
       };
-  });
+    });
 }
 
 componentDidMount = () => {
@@ -65,10 +63,12 @@ componentDidMount = () => {
 
 componentDidUpdate(prevProps,prevState) {
   if (this.state.isSignedIn !== prevState.isSignedIn) {
+    this.setState({
+      currentEvents: []
+    });
     this.loadDB();
   }
 }
-
 
 
   render() {
