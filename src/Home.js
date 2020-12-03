@@ -1,32 +1,55 @@
 import React from "react";
 import app from "./firebase";
+import firebase from "./firebase";
 import 'firebase/database';
 //import main.css
 
 class Home extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { items: [], text: '' };
+    this.state = { items: [], text: '', isSignedIn : false };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  componentDidMount() {
-    const itemsRef = app.database().ref('text');
-    itemsRef.on('value', (snapshot) => {
-      let items = snapshot.val();
-      let newState = [];
+loadDB() {
+  const itemsRef = app.database().ref('text');
+  itemsRef.on('value', (snapshot) => {
+    let items = snapshot.val();
+    let newState = [];
+    if(firebase.auth().currentUser) {
       for (let item in items) {
-        newState.push({
-          id: items[item].id,
-          text: items[item].text,
-        });
+        if(items[item].uid===firebase.auth().currentUser.uid) {
+          newState.push({
+            id: items[item].id,
+            text: items[item].text,
+          });
+        }
       }
-      this.setState({
-        items: newState
-      });
+    }
+    this.setState({
+      items: newState
     });
+  });
+}
+
+  componentDidMount = () => {
+
+    firebase.auth().onAuthStateChanged(user => {
+      this.setState({ isSignedIn: !!user})
+      console.log("user", user)
+    })
+    this.loadDB();
   }
+
+  componentDidUpdate(prevProps,prevState) {
+    if (this.state.isSignedIn !== prevState.isSignedIn) {
+      this.loadDB();
+    }
+  }
+
+
+
 
   // status(){
   //   firebase.auth().onAuthStateChanged(function(user){
@@ -48,7 +71,8 @@ class Home extends React.Component {
     //let button = <button onClick={this.status}>TEST</button>
 
     return (
-      <div>
+      this.state.isSignedIn
+      ?<div>
         <h3>TODO</h3>
         <TodoList items={this.state.items} />
         <form onSubmit={this.handleSubmit}>
@@ -65,6 +89,9 @@ class Home extends React.Component {
           </button>
         </form>
       </div>
+      :
+        <div></div>
+
 
     );
   }
@@ -81,6 +108,7 @@ class Home extends React.Component {
     const itemsRef = app.database().ref('text');
     const newItem = {
       text: this.state.text,
+      uid: firebase.auth().currentUser.uid,
       id: Date.now()
     };
     itemsRef.push(newItem);
