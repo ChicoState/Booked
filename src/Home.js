@@ -23,6 +23,7 @@ loadDB() {
           newState.push({
             id: items[item].id,
             text: items[item].text,
+            key: item,
           });
         }
       }
@@ -48,7 +49,12 @@ loadDB() {
     }
   }
 
-
+  delete(id, key){
+    this.setState({
+      items: this.state.items.filter((x) => x.id != id )
+    });
+    app.database().ref('/text/' + key).remove();
+  }
 
 
   // status(){
@@ -74,7 +80,7 @@ loadDB() {
       this.state.isSignedIn
       ?<div>
         <h3>TODO</h3>
-        <TodoList items={this.state.items} />
+        <TodoList items={this.state.items} delete={this.delete.bind(this)} />
         <form onSubmit={this.handleSubmit}>
           <label htmlFor="new-todo">
             What needs to be done?
@@ -116,11 +122,19 @@ loadDB() {
 }
 
 class TodoList extends React.Component {
+  constructor() {
+    super();
+    this.onClickfn = this.onClickfn.bind(this);
+  }
+
+  onClickfn(id, key){
+    this.props.delete(id, key);
+  }
   render() {
     return (
       <ul>
         {this.props.items.map(item => (
-          <li key={item.id}>{item.text}</li>
+          <li onClick={() => this.onClickfn(item.id, item.key)} key={item.id}>{item.text}</li>
         ))}
       </ul>
     );

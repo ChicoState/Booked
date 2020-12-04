@@ -35,16 +35,29 @@ loadDB() {
           newState.push({
             id: items[item].id,
             text: items[item].text,
+            start: items[item].startDate,
+            endDate: items[item].endDate,
+            fkey: item,
             });
-            const dateInMillis  = items[item].id;
-            var date = new Date(dateInMillis);
+            if(items[item].startDate==null) {
+              const dateInMillis  = items[item].id;
+              var date = new Date(dateInMillis);
+            } else {
+              const dateInMillis  = items[item].startDate;
+              var date = new Date(dateInMillis);
+            }
             let dayStr = date;
+            const edateInMillis  = items[item].endDate;
+            var edate = new Date(edateInMillis);
+            let edayStr = edate;
             var addEvents =
               {
                 id: createEventId(),
                 title: items[item].text,
                 start: dayStr,
-                end: dayStr + 'T12:00:00'
+                end:  items[item].endDate,
+                allDay: true,
+                fkey: item
               };
            this.state.currentEvents.push(addEvents);
           };
@@ -71,8 +84,10 @@ componentDidUpdate(prevProps,prevState) {
 }
 
 
+
   render() {
     this.loadDB();
+//    let calendarApi = this.view.calendar;
     return (
       <div className='demo-app'>
         {this.renderSidebar()}
@@ -91,10 +106,12 @@ componentDidUpdate(prevProps,prevState) {
             dayMaxEvents={true}
             weekends={this.state.weekendsVisible}
             events={this.state.currentEvents}
+            //initialEvents={this.state.currentEvents}
             select={this.handleDateSelect}
             eventContent={renderEventContent}
             eventClick={this.handleEventClick}
             eventsSet={this.handleEvents}
+            eventChange={this.handleChange}
           />
         </div>
       </div>
@@ -139,7 +156,7 @@ componentDidUpdate(prevProps,prevState) {
   }
 
   handleDateSelect = (selectInfo) => {
-    // let title = prompt('Please enter a new title for your event')
+    // let title = prompt('Please enter a new title for your task)
     // let calendarApi = selectInfo.view.calendar
     //
     // calendarApi.unselect() // clear date selection
@@ -162,10 +179,28 @@ componentDidUpdate(prevProps,prevState) {
   }
 
   handleEvents = (events) => {
-//    this.setState({
-//      currentEvents: events
-//    })
-  }
+      for (let item in events) {
+          for (let itemb in this.state.currentEvents) {
+            if (events[item].id == this.state.currentEvents[itemb].id) {
+                if(events[item].start != this.state.currentEvents[itemb].start) {
+                  var sdate = new Date(events[item].start);
+                  var sdatems = sdate.getTime();
+                  app.database().ref('/text/' + this.state.currentEvents[itemb].fkey).update({
+                  startDate: sdatems
+                  });
+                }
+                if(events[item].end != null) {
+                  var edate = new Date(events[item].end);
+                  var edatems = edate.getTime();
+                  app.database().ref('/text/' + this.state.currentEvents[itemb].fkey).update({
+                    endDate: edatems
+                    });
+                  }
+                }
+              }
+            }
+          }
+
 
 }
 
