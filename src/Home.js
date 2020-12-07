@@ -140,9 +140,10 @@ loadDB() {
         <h3>Booked Items</h3>
         <TodoList items={this.state.items} delete={this.delete.bind(this)} />
         <HashList items={this.state.hashItems} />
+        <h3>Please Enter an Item to Book</h3>
         <form onSubmit={this.handleSubmit}>
           <label htmlFor="new-todo">
-            What needs to be done?
+            Item Name:&nbsp;&nbsp;
           </label>
           <input
             id="new-todo"
@@ -153,6 +154,8 @@ loadDB() {
             Add #{this.state.items.length + 1}
           </button>
         </form>
+        <br></br>
+        (For Group Collaboration Place Shared #Hashtags Anywhere in Item Name)
         <h3>Next 30 Days</h3>
         <div style={piestyle}></div>
         <h3>{this.state.percentBooked} % Booked</h3>
