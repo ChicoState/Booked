@@ -123,8 +123,8 @@ loadDB() {
   render() {
     //let button = <button onClick={this.status}>TEST</button>
     const piestyle = {
-        width: "100px",
-        height: "100px",
+        width: "75px",
+        height: "75px",
 //        borderRadius: "50%",
         background: "red",
         backgroundImage:"linear-gradient(to right, transparent " + this.state.percentBooked + "%, green 0)"
@@ -137,7 +137,7 @@ loadDB() {
       <audio className="notifSound">
         <source src='/pen.mp3' type='audio/mpeg' />
       </audio>
-        <h3>Kabooked Items</h3>
+        <h3>Booked Items</h3>
         <TodoList items={this.state.items} delete={this.delete.bind(this)} />
         <HashList items={this.state.hashItems} />
         <form onSubmit={this.handleSubmit}>
@@ -155,7 +155,7 @@ loadDB() {
         </form>
         <h3>Next 30 Days</h3>
         <div style={piestyle}></div>
-        <h3>{this.state.percentBooked} % Kabooked</h3>
+        <h3>{this.state.percentBooked} % Booked</h3>
       </div>
       :
         <div></div>
@@ -168,16 +168,17 @@ loadDB() {
       var justdate = new Date();
       justdate.setHours(0,0,0,0);
       var options = {
-        body: "You have Kabooked items ending soon!",
+        body: "You have Booked items ending soon!",
         tag:justdate
       };
      const audioNote = document.getElementsByClassName("notifSound")[0]
-     audioNote.play()
-     let notification = new Notification("Kabooked Notification", options);
-     //attach sound play on 'show' event of notification
-  //   notification.addEventListener("show", function() {
-  //       document.getElementById(notif_sound).play();
-  //   }, false);
+     let notification = new Notification("Booked Notification", options);
+     notification.onshow = function() { audioNote.play(); };
+//     notification.addEventListener("click", function() {
+     //document.addEventListener("visibilitychange", function() {
+//         audioNote.play();
+//       });
+//     }, false);
     }
 
   handleChange(e) {
