@@ -12,15 +12,20 @@ import {
 } from "react-router-dom";
 
 const App = () => {
+  const logoStyle = {
+      width: "75px",
+      height: "75px",
+    }
   return (
     <Router>
       <div>
+      <h1>Booked <img src="logo.png" alt="Booked Logo" style={logoStyle}></img></h1>
         <ul>
           <li>
             <Link to="/">Home</Link>
           </li>
           <li>
-            <Link to="/calender">Calender</Link>
+            <Link to="/calender">Calendar</Link>
           </li>
           <li>
             {/*<Link to="/signin">Sign in</Link>*/}
