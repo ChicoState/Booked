@@ -29,16 +29,31 @@ loadDB() {
   itemsRef.on('value', (snapshot) => {
     let items = snapshot.val();
     let newState = [];
+    let hashTags = [];
+    let uniqueHash = [];
     if(firebase.auth().currentUser) {
       for (let item in items) {
         if(items[item].uid===firebase.auth().currentUser.uid) {
+          var regexp = /\B\#\w\w+\b/g;
+          let hashCheck = items[item].text.match(regexp);
+          if (hashCheck !== null) {
+            for(let tag in hashCheck) {
+              hashTags.push(hashCheck[tag]);
+            }
+          }
           newState.push({
             id: items[item].id,
             text: items[item].text,
             start: items[item].startDate,
             endDate: items[item].endDate,
+            groupColor: items[item].groupColor,
             fkey: item,
             });
+            if(items[item].groupColor==null) {
+              var groupColor = "blue";
+            } else {
+              var groupColor = items[item].groupColor;
+            }
             if(items[item].startDate==null) {
               const dateInMillis  = items[item].id;
               var date = new Date(dateInMillis);
@@ -57,11 +72,59 @@ loadDB() {
                 start: dayStr,
                 end:  items[item].endDate,
                 allDay: true,
+                backgroundColor: groupColor,
                 fkey: item
               };
            this.state.currentEvents.push(addEvents);
           };
         };
+        uniqueHash = [...new Set(hashTags)];
+        hashTags = uniqueHash;
+        for (let item in items) {
+          if(items[item].uid!==firebase.auth().currentUser.uid) {
+            for(let tag in hashTags) {
+              if(items[item].text.indexOf(hashTags[tag])!==-1) {
+                newState.push({
+                  id: items[item].id,
+                  text: items[item].text,
+                  start: items[item].startDate,
+                  endDate: items[item].endDate,
+                  groupColor: items[item].groupColor,
+                  fkey: item,
+                  });
+                  if(items[item].groupColor==null) {
+                    var groupColor = "blue";
+                  } else {
+                    var groupColor = items[item].groupColor;
+                  }
+                  if(items[item].startDate==null) {
+                    const dateInMillis  = items[item].id;
+                    var date = new Date(dateInMillis);
+                  } else {
+                    const dateInMillis  = items[item].startDate;
+                    var date = new Date(dateInMillis);
+                  }
+                  let dayStr = date;
+                  const edateInMillis  = items[item].endDate;
+                  var edate = new Date(edateInMillis);
+                  let edayStr = edate;
+                  var addEvents =
+                    {
+                      id: createEventId(),
+                      title: items[item].text + " (" + items[item].creator + ")",
+                      start: dayStr,
+                      end:  items[item].endDate,
+                      allDay: true,
+                      backgroundColor: groupColor,
+                      fkey: item
+                    };
+                 this.state.currentEvents.push(addEvents);
+              }
+            }
+          }
+        }
+
+
       };
     });
 }
@@ -173,9 +236,33 @@ componentDidUpdate(prevProps,prevState) {
   }
 
   handleEventClick = (clickInfo) => {
-//    if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-//      clickInfo.event.remove()
-//    }
+//    clickInfo.event.setProp("backgroundColor","purple");
+    let changeColor = "blue";
+    switch(clickInfo.event.backgroundColor) {
+      case 'blue':
+        changeColor = "purple";
+        break;
+      case 'purple':
+        changeColor = "red";
+        break;
+      case 'red':
+        changeColor = "orange";
+        break;
+      case 'orange':
+        changeColor = "green";
+        break;
+      case 'green':
+        changeColor = "blue";
+        break;
+    }
+    clickInfo.event.setProp("backgroundColor",changeColor);
+    for (let item in this.state.currentEvents) {
+      if (clickInfo.event.id == this.state.currentEvents[item].id) {
+        app.database().ref('/text/' + this.state.currentEvents[item].fkey).update({
+        groupColor: changeColor
+        });
+      }
+    }
   }
 
   handleEvents = (events) => {
