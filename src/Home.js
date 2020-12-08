@@ -140,7 +140,7 @@ loadDB() {
         <h3>Kabooked Items</h3>
         <TodoList items={this.state.items} delete={this.delete.bind(this)} />
         <HashList items={this.state.hashItems} />
-        <h3>Please Enter an Item to Book</h3>
+        <h3>Please Enter an Item to Kabook</h3>
         <form onSubmit={this.handleSubmit}>
           <label htmlFor="new-todo">
             Item Name:&nbsp;&nbsp;
