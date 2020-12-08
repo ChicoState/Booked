@@ -19,7 +19,7 @@ const App = () => {
   return (
     <Router>
       <div>
-      <h1>Booked <img src="logo.png" alt="Booked Logo" style={logoStyle}></img></h1>
+      <h1>Kabooked <img src="logo.png" alt="Kabooked Logo" style={logoStyle}></img></h1>
         <ul>
           <li>
             <Link to="/">Home</Link>

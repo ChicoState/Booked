@@ -137,10 +137,10 @@ loadDB() {
       <audio className="notifSound">
         <source src='/pen.mp3' type='audio/mpeg' />
       </audio>
-        <h3>Booked Items</h3>
+        <h3>Kabooked Items</h3>
         <TodoList items={this.state.items} delete={this.delete.bind(this)} />
         <HashList items={this.state.hashItems} />
-        <h3>Please Enter an Item to Book</h3>
+        <h3>Please Enter an Item to Kabook</h3>
         <form onSubmit={this.handleSubmit}>
           <label htmlFor="new-todo">
             Item Name:&nbsp;&nbsp;
@@ -158,7 +158,7 @@ loadDB() {
         (For Group Collaboration Place Shared #Hashtags Anywhere in Item Name)
         <h3>Next 30 Days</h3>
         <div style={piestyle}></div>
-        <h3>{this.state.percentBooked} % Booked</h3>
+        <h3>{this.state.percentBooked} % Kabooked</h3>
       </div>
       :
         <div></div>
@@ -171,11 +171,11 @@ loadDB() {
       var justdate = new Date();
       justdate.setHours(0,0,0,0);
       var options = {
-        body: "You have Booked items ending soon!",
+        body: "You have Kabooked items ending soon!",
         tag:justdate
       };
      const audioNote = document.getElementsByClassName("notifSound")[0]
-     let notification = new Notification("Booked Notification", options);
+     let notification = new Notification("Kabooked Notification", options);
      notification.onshow = function() { audioNote.play(); };
 //     notification.addEventListener("click", function() {
      //document.addEventListener("visibilitychange", function() {
@@ -219,7 +219,7 @@ class TodoList extends React.Component {
     return (
       <ul>
         {this.props.items.map(item => (
-          <li onClick={() => {if(window.confirm('Would you like to delete this task?')){this.onClickfn(item.id, item.key)};}} key={item.id}>{item.text}</li>
+          <li onClick={() => {if(window.confirm('Would you like to delete this item?')){this.onClickfn(item.id, item.key)};}} key={item.id}>{item.text}</li>
         ))}
       </ul>
     );
