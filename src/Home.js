@@ -24,7 +24,7 @@ loadDB() {
     if(firebase.auth().currentUser) {
       for (let item in items) {
         if(items[item].uid===firebase.auth().currentUser.uid) {
-          var regexp = /\B\#\w\w+\b/g;
+          var regexp = /\B#\w\w+\b/g;
           let hashCheck = items[item].text.match(regexp);
           if (hashCheck !== null) {
             for(let tag in hashCheck) {
@@ -36,7 +36,7 @@ loadDB() {
           }
           let startDCount = Math.floor((items[item].startDate - Date.now()) / (1000*60*60*24));
           let endDCount = Math.floor((items[item].endDate - Date.now()) / (1000*60*60*24));
-          if (endDCount==0 && noteCheck==false) {
+          if (endDCount===0 && noteCheck===false) {
             noteCheck=true;
           }
           for(let i = 1; i < 31; i++) {
@@ -98,7 +98,7 @@ loadDB() {
 
   delete(id, key){
     this.setState({
-      items: this.state.items.filter((x) => x.id != id )
+      items: this.state.items.filter((x) => x.id !== id )
     });
     app.database().ref('/text/' + key).remove();
   }
@@ -129,7 +129,7 @@ loadDB() {
         background: "red",
         backgroundImage:"linear-gradient(to right, transparent " + this.state.percentBooked + "%, green 0)"
       }
-    var notif_sound = "notif_sound";
+//    var notif_sound = "notif_sound";
 
     return (
       this.state.isSignedIn
@@ -227,13 +227,13 @@ class TodoList extends React.Component {
 }
 
 class HashList extends React.Component {
-  constructor() {
-    super();
-  }
+//  constructor() {
+//    super();
+//  }
 
   render() {
     return (
-      (this.props.items!="")
+      (this.props.items!=="")
       ?<ul>
         <h3>Other Tasks with Your Hashtags</h3>
         {this.props.items.map(item => (
