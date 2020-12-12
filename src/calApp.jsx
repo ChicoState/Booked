@@ -25,6 +25,7 @@ export default class CalApp extends React.Component {
   }
 
 loadDB() {
+if (this._isMounted) {
   const itemsRef = app.database().ref('text');
   itemsRef.on('value', (snapshot) => {
     let items = snapshot.val();
@@ -34,7 +35,7 @@ loadDB() {
     if(firebase.auth().currentUser) {
       for (let item in items) {
         if(items[item].uid===firebase.auth().currentUser.uid) {
-          var regexp = /\B\#\w\w+\b/g;
+          var regexp = /\B#\w\w+\b/g;
           let hashCheck = items[item].text.match(regexp);
           if (hashCheck !== null) {
             for(let tag in hashCheck) {
@@ -52,19 +53,19 @@ loadDB() {
             if(items[item].groupColor==null) {
               var groupColor = "blue";
             } else {
-              var groupColor = items[item].groupColor;
+              groupColor = items[item].groupColor;
             }
             if(items[item].startDate==null) {
               const dateInMillis  = items[item].id;
               var date = new Date(dateInMillis);
             } else {
               const dateInMillis  = items[item].startDate;
-              var date = new Date(dateInMillis);
+              date = new Date(dateInMillis);
             }
             let dayStr = date;
-            const edateInMillis  = items[item].endDate;
-            var edate = new Date(edateInMillis);
-            let edayStr = edate;
+//            const edateInMillis  = items[item].endDate;
+//            var edate = new Date(edateInMillis);
+//            let edayStr = edate;
             var addEvents =
               {
                 id: createEventId(),
@@ -93,22 +94,22 @@ loadDB() {
                   fkey: item,
                   });
                   if(items[item].groupColor==null) {
-                    var groupColor = "blue";
+                    groupColor = "blue";
                   } else {
-                    var groupColor = items[item].groupColor;
+                    groupColor = items[item].groupColor;
                   }
                   if(items[item].startDate==null) {
                     const dateInMillis  = items[item].id;
-                    var date = new Date(dateInMillis);
+                    date = new Date(dateInMillis);
                   } else {
                     const dateInMillis  = items[item].startDate;
-                    var date = new Date(dateInMillis);
+                    date = new Date(dateInMillis);
                   }
                   let dayStr = date;
-                  const edateInMillis  = items[item].endDate;
-                  var edate = new Date(edateInMillis);
-                  let edayStr = edate;
-                  var addEvents =
+//                  const edateInMillis  = items[item].endDate;
+//                  var edate = new Date(edateInMillis);
+//                  let edayStr = edate;
+                  addEvents =
                     {
                       id: createEventId(),
                       title: items[item].text + " (" + items[item].creator + ")",
@@ -127,32 +128,43 @@ loadDB() {
 
       };
     });
+  }
 }
 
 componentDidMount = () => {
-  firebase.auth().onAuthStateChanged(user => {
-    this.setState({ isSignedIn: !!user})
-    console.log("user", user)
-  })
-  this.loadDB();
-}
-
-componentDidUpdate(prevProps,prevState) {
-  if (this.state.isSignedIn !== prevState.isSignedIn) {
-    this.setState({
-      currentEvents: []
-    });
+  this._isMounted = true;
+  if (this._isMounted) {
+    firebase.auth().onAuthStateChanged(user => {
+      this.setState({ isSignedIn: !!user})
+  //    console.log("user", user)
+    })
     this.loadDB();
   }
 }
 
+componentDidUpdate(prevProps,prevState) {
+  if (this._isMounted) {
+    if (this.state.isSignedIn !== prevState.isSignedIn) {
+      this.setState({
+        currentEvents: []
+      });
+      this.loadDB();
+    }
+  }
+}
 
+componentWillUnmount() {
+  this._isMounted = false;
+}
 
   render() {
-    this.loadDB();
+    if (this._isMounted) {
+      this.loadDB();
 //    let calendarApi = this.view.calendar;
+    }
     return (
-      <div className='demo-app'>
+      this._isMounted
+      ?<div className='demo-app'>
         {this.renderSidebar()}
         <div className='demo-app-main'>
           <FullCalendar
@@ -178,6 +190,8 @@ componentDidUpdate(prevProps,prevState) {
           />
         </div>
       </div>
+      :
+      <div></div>
     )
   }
 
@@ -212,11 +226,13 @@ componentDidUpdate(prevProps,prevState) {
     // )
   }
 
-  handleWeekendsToggle = () => {
-    this.setState({
-      weekendsVisible: !this.state.weekendsVisible
-    })
-  }
+  // handleWeekendsToggle = () => {
+  //   if (this._isMounted) {
+  //     this.setState({
+  //       weekendsVisible: !this.state.weekendsVisible
+  //     })
+  //   }
+  // }
 
   handleDateSelect = (selectInfo) => {
     // let title = prompt('Please enter a new title for your task)
@@ -236,40 +252,46 @@ componentDidUpdate(prevProps,prevState) {
   }
 
   handleEventClick = (clickInfo) => {
+    if (this._isMounted) {
 //    clickInfo.event.setProp("backgroundColor","purple");
-    let changeColor = "blue";
-    switch(clickInfo.event.backgroundColor) {
-      case 'blue':
-        changeColor = "purple";
-        break;
-      case 'purple':
-        changeColor = "red";
-        break;
-      case 'red':
-        changeColor = "orange";
-        break;
-      case 'orange':
-        changeColor = "green";
-        break;
-      case 'green':
-        changeColor = "blue";
-        break;
-    }
-    clickInfo.event.setProp("backgroundColor",changeColor);
-    for (let item in this.state.currentEvents) {
-      if (clickInfo.event.id == this.state.currentEvents[item].id) {
-        app.database().ref('/text/' + this.state.currentEvents[item].fkey).update({
-        groupColor: changeColor
-        });
+      let changeColor = "blue";
+      switch(clickInfo.event.backgroundColor) {
+        case 'blue':
+          changeColor = "purple";
+          break;
+        case 'purple':
+          changeColor = "red";
+          break;
+        case 'red':
+          changeColor = "orange";
+          break;
+        case 'orange':
+          changeColor = "green";
+          break;
+        case 'green':
+          changeColor = "blue";
+          break;
+        default:
+          changeColor = "blue";
+          break;
+      }
+      clickInfo.event.setProp("backgroundColor",changeColor);
+      for (let item in this.state.currentEvents) {
+        if (clickInfo.event.id === this.state.currentEvents[item].id) {
+          app.database().ref('/text/' + this.state.currentEvents[item].fkey).update({
+          groupColor: changeColor
+          });
+        }
       }
     }
   }
 
   handleEvents = (events) => {
+    if (this._isMounted) {
       for (let item in events) {
           for (let itemb in this.state.currentEvents) {
-            if (events[item].id == this.state.currentEvents[itemb].id) {
-                if(events[item].start != this.state.currentEvents[itemb].start) {
+            if (events[item].id === this.state.currentEvents[itemb].id) {
+                if(events[item].start !== this.state.currentEvents[itemb].start) {
                   var sdate = new Date(events[item].start);
                   var sdatems = sdate.getTime();
                   app.database().ref('/text/' + this.state.currentEvents[itemb].fkey).update({
@@ -287,6 +309,7 @@ componentDidUpdate(prevProps,prevState) {
               }
             }
           }
+        }
 
 
 }
