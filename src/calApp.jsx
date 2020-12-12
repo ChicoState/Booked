@@ -29,10 +29,10 @@ if (this._isMounted) {
   const itemsRef = app.database().ref('text');
   itemsRef.on('value', (snapshot) => {
     let items = snapshot.val();
-    let newState = [];
     let hashTags = [];
     let uniqueHash = [];
     if(firebase.auth().currentUser) {
+      let newState = [];
       for (let item in items) {
         if(items[item].uid===firebase.auth().currentUser.uid) {
           var regexp = /\B#\w\w+\b/g;
@@ -77,8 +77,8 @@ if (this._isMounted) {
                 fkey: item
               };
            this.state.currentEvents.push(addEvents);
-          };
-        };
+          }
+        }
         uniqueHash = [...new Set(hashTags)];
         hashTags = uniqueHash;
         for (let item in items) {
@@ -126,7 +126,7 @@ if (this._isMounted) {
         }
 
 
-      };
+      }
     });
   }
 }
@@ -254,10 +254,10 @@ componentWillUnmount() {
   handleEventClick = (clickInfo) => {
     if (this._isMounted) {
 //    clickInfo.event.setProp("backgroundColor","purple");
-      let changeColor = "blue";
+//      var changeColor;
       switch(clickInfo.event.backgroundColor) {
         case 'blue':
-          changeColor = "purple";
+          var changeColor = "purple";
           break;
         case 'purple':
           changeColor = "red";

@@ -219,7 +219,7 @@ class TodoList extends React.Component {
     return (
       <ul>
         {this.props.items.map(item => (
-          <li onClick={() => {if(window.confirm('Would you like to delete this item?')){this.onClickfn(item.id, item.key)};}} key={item.id}>{item.text}</li>
+          <li onClick={() => {if(window.confirm('Would you like to delete this item?')){this.onClickfn(item.id, item.key)}}} key={item.id}>{item.text}</li>
         ))}
       </ul>
     );

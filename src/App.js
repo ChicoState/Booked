@@ -1,7 +1,7 @@
 import React from 'react';
 import Home from "./Home";
 import CalApp from "./calApp";
-import AuthControl from "./authenticate";
+import AuthControl from "./AuthControl";
 //import './main.css';
 
 import {
