@@ -7,8 +7,8 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { createEventId } from './event-utils'
 import './index.css';
-import app from "./firebase";
-import firebase from "./firebase";
+import FirebaseApp from "./FirebaseApp";
+import firebase from "./FirebaseApp";
 import 'firebase/database';
 
 export default class CalApp extends React.Component {
@@ -26,13 +26,13 @@ export default class CalApp extends React.Component {
 
 loadDB() {
 if (this._isMounted) {
-  const itemsRef = app.database().ref('text');
+  const itemsRef = FirebaseApp.database().ref('text');
   itemsRef.on('value', (snapshot) => {
     let items = snapshot.val();
     let hashTags = [];
     let uniqueHash = [];
     if(firebase.auth().currentUser) {
-      let newState = [];
+      // let newState = [];
       for (let item in items) {
         if(items[item].uid===firebase.auth().currentUser.uid) {
           var regexp = /\B#\w\w+\b/g;
@@ -42,14 +42,14 @@ if (this._isMounted) {
               hashTags.push(hashCheck[tag]);
             }
           }
-          newState.push({
-            id: items[item].id,
-            text: items[item].text,
-            start: items[item].startDate,
-            endDate: items[item].endDate,
-            groupColor: items[item].groupColor,
-            fkey: item,
-            });
+          // newState.push({
+          //   id: items[item].id,
+          //   text: items[item].text,
+          //   start: items[item].startDate,
+          //   endDate: items[item].endDate,
+          //   groupColor: items[item].groupColor,
+          //   fkey: item,
+          //   });
             if(items[item].groupColor==null) {
               var groupColor = "blue";
             } else {
@@ -85,14 +85,14 @@ if (this._isMounted) {
           if(items[item].uid!==firebase.auth().currentUser.uid) {
             for(let tag in hashTags) {
               if(items[item].text.indexOf(hashTags[tag])!==-1) {
-                newState.push({
-                  id: items[item].id,
-                  text: items[item].text,
-                  start: items[item].startDate,
-                  endDate: items[item].endDate,
-                  groupColor: items[item].groupColor,
-                  fkey: item,
-                  });
+                // newState.push({
+                //   id: items[item].id,
+                //   text: items[item].text,
+                //   start: items[item].startDate,
+                //   endDate: items[item].endDate,
+                //   groupColor: items[item].groupColor,
+                //   fkey: item,
+                //   });
                   if(items[item].groupColor==null) {
                     groupColor = "blue";
                   } else {
@@ -254,7 +254,6 @@ componentWillUnmount() {
   handleEventClick = (clickInfo) => {
     if (this._isMounted) {
 //    clickInfo.event.setProp("backgroundColor","purple");
-//      var changeColor;
       switch(clickInfo.event.backgroundColor) {
         case 'blue':
           var changeColor = "purple";
@@ -278,7 +277,7 @@ componentWillUnmount() {
       clickInfo.event.setProp("backgroundColor",changeColor);
       for (let item in this.state.currentEvents) {
         if (clickInfo.event.id === this.state.currentEvents[item].id) {
-          app.database().ref('/text/' + this.state.currentEvents[item].fkey).update({
+          FirebaseApp.database().ref('/text/' + this.state.currentEvents[item].fkey).update({
           groupColor: changeColor
           });
         }
@@ -294,14 +293,14 @@ componentWillUnmount() {
                 if(events[item].start !== this.state.currentEvents[itemb].start) {
                   var sdate = new Date(events[item].start);
                   var sdatems = sdate.getTime();
-                  app.database().ref('/text/' + this.state.currentEvents[itemb].fkey).update({
+                  FirebaseApp.database().ref('/text/' + this.state.currentEvents[itemb].fkey).update({
                   startDate: sdatems
                   });
                 }
                 if(events[item].end != null) {
                   var edate = new Date(events[item].end);
                   var edatems = edate.getTime();
-                  app.database().ref('/text/' + this.state.currentEvents[itemb].fkey).update({
+                  FirebaseApp.database().ref('/text/' + this.state.currentEvents[itemb].fkey).update({
                     endDate: edatems
                     });
                   }

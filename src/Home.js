@@ -1,6 +1,6 @@
 import React from "react";
-import app from "./firebase";
-import firebase from "./firebase";
+import FirebaseApp from "./FirebaseApp";
+import firebase from "./FirebaseApp";
 import 'firebase/database';
 
 class Home extends React.Component {
@@ -12,7 +12,7 @@ class Home extends React.Component {
   }
 
 loadDB() {
-  const itemsRef = app.database().ref('text');
+  const itemsRef = FirebaseApp.database().ref('text');
   let noteCheck = this.state.noteSent;
   itemsRef.on('value', (snapshot) => {
     let items = snapshot.val();
@@ -100,7 +100,7 @@ loadDB() {
     this.setState({
       items: this.state.items.filter((x) => x.id !== id )
     });
-    app.database().ref('/text/' + key).remove();
+    FirebaseApp.database().ref('/text/' + key).remove();
   }
 
 
@@ -193,7 +193,7 @@ loadDB() {
     if (this.state.text.length === 0) {
       return;
     }
-    const itemsRef = app.database().ref('text');
+    const itemsRef = FirebaseApp.database().ref('text');
     const newItem = {
       text: this.state.text,
       uid: firebase.auth().currentUser.uid,
