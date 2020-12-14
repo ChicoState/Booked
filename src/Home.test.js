@@ -2,16 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import renderer from 'react-test-renderer';
 import { mount } from 'enzyme';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-import { Provider } from 'react-redux';
+//import configureMockStore from 'redux-mock-store';
+//import thunk from 'redux-thunk';
+//import { Provider } from 'react-redux';
 import Home from './Home';
 import FirebaseApp from './FirebaseApp'
 import firebase from 'firebase';
 
-const mockStore = configureMockStore([thunk]);
-const store = mockStore();
-const FirebaseAuthProps = {};
+// const mockStore = configureMockStore([thunk]);
+// const store = mockStore();
+// const FirebaseAuthProps = {};
 
 // jest.mock('firebase', () => {
 //   return {
@@ -78,10 +78,10 @@ jest.mock('firebase', () => {
   database.Database = jest.fn().mockReturnValue({ref,on});
 
   const auth = jest.fn();
-  const currentUser = jest.fn();
+//  const currentUser = jest.fn();
 
   const mAuth = { signInWithRedirect: jest.fn() };
-  auth.currentUser = { displayName: 'Kris Selvidge', uid:'tGVt2mPFHXTEh9xl40SQEirzYaU2'};
+//  auth.currentUser = { displayName: 'Kris Selvidge', uid:'tGVt2mPFHXTEh9xl40SQEirzYaU2'};
   auth.GoogleAuthProvider = jest.fn();
   auth.Auth = jest.fn(() => mAuth);
   return { auth, database };
@@ -119,7 +119,7 @@ it('notifications', done => {
   itemsRef.on('value', (snapshot) => {
     let items = snapshot.val();
      try {
-       expect(items).anything;
+       expect(items).toStrictEqual(expect.anything());
        done();
      } catch (error) {
        done(error);
@@ -144,7 +144,7 @@ it('render with dataload', done => {
   itemsRef.on('value', (snapshot) => {
     let items = snapshot.val();
      try {
-       expect(items).anything;
+       expect(items).toStrictEqual(expect.anything());
        done();
      } catch (error) {
        done(error);
@@ -168,7 +168,7 @@ it('render when signing in and out', done => {
   itemsRef.on('value', (snapshot) => {
     let items = snapshot.val();
      try {
-       expect(items).anything;
+       expect(items).toStrictEqual(expect.anything());
        done();
      } catch (error) {
        done(error);
@@ -193,7 +193,7 @@ test('compare output', done => {
   itemsRef.on('value', (snapshot) => {
     let items = snapshot.val();
      try {
-       expect(items).anything;
+       expect(items).toStrictEqual(expect.anything());
        done();
      } catch (error) {
        done(error);
@@ -224,7 +224,7 @@ test('compare output', done => {
 //    itemsRef.on('value', (snapshot) => {
 //      let items = snapshot.val();
 //      try {
-//        expect(items).anything;
+//        expect(items).toStrictEqual(expect().anything;
 //        done();
 //      } catch (error) {
 //        done(error);

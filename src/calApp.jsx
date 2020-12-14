@@ -245,17 +245,10 @@ componentDidUpdate(prevProps,prevState) {
       // }
     }
   handleEventClick = (clickInfo) => {
-//    clickInfo.event.setProp("backgroundColor","purple");
-      var ColorToInt = new Object();
-      ColorToInt["blue"] = 0;
-      ColorToInt["purple"] = 1;
-      ColorToInt["red"] = 2;
-      ColorToInt["orange"] = 3;
-      ColorToInt["green"] = 4;
+      const ColorToInt = { blue: 0, purple: 1, red: 2, orange: 3, green: 4 };
+      const IntToColor = ["blue", "purple", "red", "orange", "green"];
       var ColorKey = ColorToInt[clickInfo.event.backgroundColor];
-      var IntToColor = ["blue", "purple", "red", "orange", "green"];
       var changeColor = IntToColor[(ColorKey +1) % 5];
-      // alert(IntToColor[(ColorKey +1) % 5]);
       // switch(clickInfo.event.backgroundColor) {
       //   case 'blue':
       //     var changeColor = "purple";

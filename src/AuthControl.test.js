@@ -2,15 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import renderer from 'react-test-renderer';
 import { mount } from 'enzyme';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-import { Provider } from 'react-redux';
+//import configureMockStore from 'redux-mock-store';
+//import thunk from 'redux-thunk';
+//import { Provider } from 'react-redux';
 import AuthControl from './AuthControl';
 import firebase from 'firebase';
 
-const mockStore = configureMockStore([thunk]);
-const store = mockStore();
-const FirebaseAuthProps = {};
+// const mockStore = configureMockStore([thunk]);
+// const store = mockStore();
+// const FirebaseAuthProps = {};
 
 jest.mock('firebase', () => {
   return {
