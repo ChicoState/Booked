@@ -1,4 +1,7 @@
 import React from 'react'
+import FirebaseApp from "./FirebaseApp";
+import firebase from "./FirebaseApp";
+import 'firebase/database';
 //import ReactDOM from 'react-dom';
 //import FullCalendar, { formatDate } from '@fullcalendar/react'
 import FullCalendar from '@fullcalendar/react'
@@ -7,9 +10,6 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { createEventId } from './event-utils'
 import './index.css';
-import FirebaseApp from "./FirebaseApp";
-import firebase from "./FirebaseApp";
-import 'firebase/database';
 
 export default class CalApp extends React.Component {
 
@@ -20,21 +20,24 @@ export default class CalApp extends React.Component {
        isSignedIn : false,
        currentEvents: [],
        items: [],
+       cuid: "",
        text: '',
      }
   }
 
 loadDB() {
-if (this._isMounted) {
-  const itemsRef = FirebaseApp.database().ref('text');
+//if (this._isMounted) {
+//  const itemsRef = FirebaseApp.database().ref('text');
+  const itemsRef = firebase.database().ref('text');
   itemsRef.on('value', (snapshot) => {
     let items = snapshot.val();
     let hashTags = [];
     let uniqueHash = [];
-    if(firebase.auth().currentUser) {
+    if(this.state.isSignedIn) {
       // let newState = [];
       for (let item in items) {
-        if(items[item].uid===firebase.auth().currentUser.uid) {
+//        if(items[item].uid===firebase.auth().currentUser.uid) {
+        if(items[item].uid===this.state.cuid) {
           var regexp = /\B#\w\w+\b/g;
           let hashCheck = items[item].text.match(regexp);
           if (hashCheck !== null) {
@@ -50,18 +53,18 @@ if (this._isMounted) {
           //   groupColor: items[item].groupColor,
           //   fkey: item,
           //   });
-            if(items[item].groupColor==null) {
-              var groupColor = "blue";
-            } else {
-              groupColor = items[item].groupColor;
-            }
-            if(items[item].startDate==null) {
-              const dateInMillis  = items[item].id;
-              var date = new Date(dateInMillis);
-            } else {
+//            if(items[item].groupColor==null) {
+//              var groupColor = "blue";
+//            } else {
+            var groupColor = items[item].groupColor;
+//            }
+//            if(items[item].startDate==null) {
+//              const dateInMillis  = items[item].id;
+//              var date = new Date(dateInMillis);
+//            } else {
               const dateInMillis  = items[item].startDate;
-              date = new Date(dateInMillis);
-            }
+              var date = new Date(dateInMillis);
+//            }
             let dayStr = date;
 //            const edateInMillis  = items[item].endDate;
 //            var edate = new Date(edateInMillis);
@@ -82,7 +85,8 @@ if (this._isMounted) {
         uniqueHash = [...new Set(hashTags)];
         hashTags = uniqueHash;
         for (let item in items) {
-          if(items[item].uid!==firebase.auth().currentUser.uid) {
+//          if(items[item].uid!==firebase.auth().currentUser.uid) {
+          if(items[item].uid!==this.state.cuid) {
             for(let tag in hashTags) {
               if(items[item].text.indexOf(hashTags[tag])!==-1) {
                 // newState.push({
@@ -93,18 +97,18 @@ if (this._isMounted) {
                 //   groupColor: items[item].groupColor,
                 //   fkey: item,
                 //   });
-                  if(items[item].groupColor==null) {
-                    groupColor = "blue";
-                  } else {
+//                  if(items[item].groupColor==null) {
+//                    groupColor = "blue";
+//                  } else {
                     groupColor = items[item].groupColor;
-                  }
-                  if(items[item].startDate==null) {
-                    const dateInMillis  = items[item].id;
-                    date = new Date(dateInMillis);
-                  } else {
+//                  }
+//                  if(items[item].startDate==null) {
+  //                  const dateInMillis  = items[item].id;
+  //                  date = new Date(dateInMillis);
+  //                } else {
                     const dateInMillis  = items[item].startDate;
                     date = new Date(dateInMillis);
-                  }
+//                  }
                   let dayStr = date;
 //                  const edateInMillis  = items[item].endDate;
 //                  var edate = new Date(edateInMillis);
@@ -128,43 +132,36 @@ if (this._isMounted) {
 
       }
     });
-  }
+//  }
 }
 
 componentDidMount = () => {
-  this._isMounted = true;
-  if (this._isMounted) {
     firebase.auth().onAuthStateChanged(user => {
-      this.setState({ isSignedIn: !!user})
+      this.setState({ isSignedIn: !!user, cuid: ((firebase.auth().currentUser !== null) ? firebase.auth().currentUser.uid : "") })
   //    console.log("user", user)
     })
+//    this._isMounted = true;
     this.loadDB();
-  }
 }
 
 componentDidUpdate(prevProps,prevState) {
-  if (this._isMounted) {
+//  if (this._isMounted) {
     if (this.state.isSignedIn !== prevState.isSignedIn) {
       this.setState({
-        currentEvents: []
+        currentEvents: [],
+        cuid: ((firebase.auth().currentUser !== null) ? firebase.auth().currentUser.uid : "")
       });
       this.loadDB();
     }
-  }
+//  }
 }
 
-componentWillUnmount() {
-  this._isMounted = false;
-}
 
   render() {
-    if (this._isMounted) {
       this.loadDB();
 //    let calendarApi = this.view.calendar;
-    }
     return (
-      this._isMounted
-      ?<div className='demo-app'>
+      <div className='demo-app'>
         {this.renderSidebar()}
         <div className='demo-app-main'>
           <FullCalendar
@@ -190,90 +187,95 @@ componentWillUnmount() {
           />
         </div>
       </div>
-      :
-      <div></div>
     )
   }
+    renderSidebar() {
+      // return (
+      //   <div className='demo-app-sidebar'>
+      //     <div className='demo-app-sidebar-section'>
+      //       <h2>Instructions</h2>
+      //       <ul>
+      //         <li>Select dates and you will be prompted to create a new event</li>
+      //         <li>Drag, drop, and resize events</li>
+      //         <li>Click an event to delete it</li>
+      //       </ul>
+      //     </div>
+      //     <div className='demo-app-sidebar-section'>
+      //       <label>
+      //         <input
+      //           type='checkbox'
+      //           checked={this.state.weekendsVisible}
+      //           onChange={this.handleWeekendsToggle}
+      //         ></input>
+      //         toggle weekends
+      //       </label>
+      //     </div>
+      //     <div className='demo-app-sidebar-section'>
+      //       <h2>All Events ({this.state.currentEvents.length})</h2>
+      //       <ul>
+      //         {this.state.currentEvents.map(renderSidebarEvent)}
+      //       </ul>
+      //     </div>
+      //   </div>
+      // )
+    }
 
-  renderSidebar() {
-    // return (
-    //   <div className='demo-app-sidebar'>
-    //     <div className='demo-app-sidebar-section'>
-    //       <h2>Instructions</h2>
-    //       <ul>
-    //         <li>Select dates and you will be prompted to create a new event</li>
-    //         <li>Drag, drop, and resize events</li>
-    //         <li>Click an event to delete it</li>
-    //       </ul>
-    //     </div>
-    //     <div className='demo-app-sidebar-section'>
-    //       <label>
-    //         <input
-    //           type='checkbox'
-    //           checked={this.state.weekendsVisible}
-    //           onChange={this.handleWeekendsToggle}
-    //         ></input>
-    //         toggle weekends
-    //       </label>
-    //     </div>
-    //     <div className='demo-app-sidebar-section'>
-    //       <h2>All Events ({this.state.currentEvents.length})</h2>
-    //       <ul>
-    //         {this.state.currentEvents.map(renderSidebarEvent)}
-    //       </ul>
-    //     </div>
-    //   </div>
-    // )
-  }
-
-  // handleWeekendsToggle = () => {
-  //   if (this._isMounted) {
-  //     this.setState({
-  //       weekendsVisible: !this.state.weekendsVisible
-  //     })
-  //   }
-  // }
-
-  handleDateSelect = (selectInfo) => {
-    // let title = prompt('Please enter a new title for your task)
-    // let calendarApi = selectInfo.view.calendar
-    //
-    // calendarApi.unselect() // clear date selection
-    //
-    // if (title) {
-    //   calendarApi.addEvent({
-    //     id: createEventId(),
-    //     title,
-    //     start: selectInfo.startStr,
-    //     end: selectInfo.endStr,
-    //     allDay: selectInfo.allDay
-    //   })
+    // handleWeekendsToggle = () => {
+    //   if (this._isMounted) {
+    //     this.setState({
+    //       weekendsVisible: !this.state.weekendsVisible
+    //     })
+    //   }
     // }
-  }
 
+    handleDateSelect = (selectInfo) => {
+      // let title = prompt('Please enter a new title for your task)
+      // let calendarApi = selectInfo.view.calendar
+      //
+      // calendarApi.unselect() // clear date selection
+      //
+      // if (title) {
+      //   calendarApi.addEvent({
+      //     id: createEventId(),
+      //     title,
+      //     start: selectInfo.startStr,
+      //     end: selectInfo.endStr,
+      //     allDay: selectInfo.allDay
+      //   })
+      // }
+    }
   handleEventClick = (clickInfo) => {
-    if (this._isMounted) {
 //    clickInfo.event.setProp("backgroundColor","purple");
-      switch(clickInfo.event.backgroundColor) {
-        case 'blue':
-          var changeColor = "purple";
-          break;
-        case 'purple':
-          changeColor = "red";
-          break;
-        case 'red':
-          changeColor = "orange";
-          break;
-        case 'orange':
-          changeColor = "green";
-          break;
-        case 'green':
-          changeColor = "blue";
-          break;
-        default:
-          changeColor = "blue";
-          break;
-      }
+      var ColorToInt = new Object();
+      ColorToInt["blue"] = 0;
+      ColorToInt["purple"] = 1;
+      ColorToInt["red"] = 2;
+      ColorToInt["orange"] = 3;
+      ColorToInt["green"] = 4;
+      var ColorKey = ColorToInt[clickInfo.event.backgroundColor];
+      var IntToColor = ["blue", "purple", "red", "orange", "green"];
+      var changeColor = IntToColor[(ColorKey +1) % 5];
+      // alert(IntToColor[(ColorKey +1) % 5]);
+      // switch(clickInfo.event.backgroundColor) {
+      //   case 'blue':
+      //     var changeColor = "purple";
+      //     break;
+      //   case 'purple':
+      //     changeColor = "red";
+      //     break;
+      //   case 'red':
+      //     changeColor = "orange";
+      //     break;
+      //   case 'orange':
+      //     changeColor = "green";
+      //     break;
+      //   case 'green':
+      //     changeColor = "blue";
+      //     break;
+      //   default:
+      //     changeColor = "blue";
+      //     break;
+      // }
       clickInfo.event.setProp("backgroundColor",changeColor);
       for (let item in this.state.currentEvents) {
         if (clickInfo.event.id === this.state.currentEvents[item].id) {
@@ -283,10 +285,9 @@ componentWillUnmount() {
         }
       }
     }
-  }
+
 
   handleEvents = (events) => {
-    if (this._isMounted) {
       for (let item in events) {
           for (let itemb in this.state.currentEvents) {
             if (events[item].id === this.state.currentEvents[itemb].id) {
@@ -307,7 +308,6 @@ componentWillUnmount() {
                 }
               }
             }
-          }
         }
 
 
@@ -321,6 +321,7 @@ function renderEventContent(eventInfo) {
     </>
   )
 }
+
 
 // function renderSidebarEvent(event) {
 //   return (
