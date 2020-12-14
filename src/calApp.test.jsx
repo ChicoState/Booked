@@ -2,16 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import renderer from 'react-test-renderer';
 import { mount } from 'enzyme';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-import { Provider } from 'react-redux';
+//import configureMockStore from 'redux-mock-store';
+//import thunk from 'redux-thunk';
+//import { Provider } from 'react-redux';
 import CalApp from './calApp';
 import FirebaseApp from './FirebaseApp'
 import firebase from 'firebase';
 
-const mockStore = configureMockStore([thunk]);
-const store = mockStore();
-const FirebaseAuthProps = {};
+// const mockStore = configureMockStore([thunk]);
+// const store = mockStore();
+// const FirebaseAuthProps = {};
 
 
 jest.mock('firebase', () => {
@@ -57,7 +57,7 @@ it('render with dataload', done => {
   itemsRef.on('value', (snapshot) => {
     let items = snapshot.val();
      try {
-       expect(items).anything;
+       expect(items).toStrictEqual(expect.anything());
        done();
      } catch (error) {
        done(error);
@@ -88,7 +88,7 @@ it('async comparison', () => {
   wrapper3.setState({isSignedIn:false});
   wrapper3.setState({cuid:'7JmSHENe6vebq1H5JOP3n0VObsD3'});
   wrapper3.setState({isSignedIn:true});
-  expect(ReactDOM.render(<CalApp/>, div)).anything;
+  expect(ReactDOM.render(<CalApp/>, div)).toStrictEqual(expect.anything());
 });
 
 // it('clickcolors', () => {
@@ -96,8 +96,8 @@ it('async comparison', () => {
 //   const instance = wrapper4.instance();
 //   wrapper4.setState({cuid:'7JmSHENe6vebq1H5JOP3n0VObsD3'});
 // //  const event = wrapper4.find("#.fc-event-main");
-// //  expect(event.simulate("click")).anything;
-//   expect(wrapper4.find("fc-event-main")).anything;
+// //  expect(event.simulate("click")).toStrictEqual(expect().anything;
+//   expect(wrapper4.find("fc-event-main")).toStrictEqual(expect().anything;
 // });
 
 
@@ -108,7 +108,7 @@ it('render when signing in and out', done => {
   itemsRef.on('value', (snapshot) => {
     let items = snapshot.val();
      try {
-       expect(items).anything;
+       expect(items).toStrictEqual(expect.anything());
        done();
      } catch (error) {
        done(error);
@@ -133,7 +133,7 @@ it('render when signing in and out', done => {
 //   itemsRef.on('value', (snapshot) => {
 //     let items = snapshot.val();
 //      try {
-//        expect(items).anything;
+//        expect(items).toStrictEqual(expect().anything;
 //        done();
 //      } catch (error) {
 //        done(error);
