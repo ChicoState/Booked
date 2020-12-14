@@ -1,0 +1,35 @@
+{
+ "setupFiles": ["<rootDir>/src/setupTests.js", "<rootDir>/config.ts"],
+   "transformIgnorePatterns": [
+     "/!node_modules\\/@fullcalendar/"
+   ],
+   "collectCoverageFrom": [
+     "src/**/*.js",
+     "src/**/*.jsx"
+   ],
+   "coverageThreshold": {
+     "global": {
+       "branches": 50,
+       "functions": 50,
+       "lines": 50,
+       "statements": 50
+     }},
+     "preprocessorIgnorePatterns": [
+       "node_modules/enzyme"
+     ],
+     "scriptPreprocessor": "<rootDir>/node_modules/babel-jest",
+     "setupEnvScriptFile": "node_modules/react-native/jestSupport/env.js",
+     "testPathIgnorePatterns": [
+       "/node_modules/",
+       "packager/react-packager/src/Activity/"
+     ],
+     "unmockedModulePathPatterns": [
+       "react",
+       "react-dom",
+       "react-native",
+       "react-addons-test-utils",
+       "promise",
+       "source-map",
+       "enzyme"
+     ]
+}

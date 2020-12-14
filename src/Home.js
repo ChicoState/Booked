@@ -1,18 +1,19 @@
 import React from "react";
-import app from "./firebase";
-import firebase from "./firebase";
+import FirebaseApp from "./FirebaseApp";
+import firebase from "./FirebaseApp";
 import 'firebase/database';
 
 class Home extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { items: [], text: '', isSignedIn : false, hashItems: [], percentBooked: 0, noteSent: false };
+    this.state = { items: [], text: '', isSignedIn : false, hashItems: [], percentBooked: 0, noteSent: false, cuid: ''};
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
 loadDB() {
-  const itemsRef = app.database().ref('text');
+//  const itemsRef = FirebaseApp.database().ref('text');
+  const itemsRef = firebase.database().ref('text');
   let noteCheck = this.state.noteSent;
   itemsRef.on('value', (snapshot) => {
     let items = snapshot.val();
@@ -21,9 +22,12 @@ loadDB() {
     let newHash = [];
     let uniqueHash = [];
     let datesBooked = [];
-    if(firebase.auth().currentUser) {
+//    if(firebase.auth().currentUser) {
+    if(this.state.isSignedIn) {
       for (let item in items) {
-        if(items[item].uid===firebase.auth().currentUser.uid) {
+//        console.log(items[item].uid);
+//        if(items[item].uid===firebase.auth().currentUser.uid) {
+        if(items[item].uid===this.state.cuid) {
           var regexp = /\B#\w\w+\b/g;
           let hashCheck = items[item].text.match(regexp);
           if (hashCheck !== null) {
@@ -31,9 +35,9 @@ loadDB() {
               hashTags.push(hashCheck[tag]);
             }
           }
-          if(items[item].endDate==null) {
-            items[item].endDate = items[item].startDate;
-          }
+//          if(items[item].endDate==null) {
+//            items[item].endDate = items[item].startDate;
+//          }
           let startDCount = Math.floor((items[item].startDate - Date.now()) / (1000*60*60*24));
           let endDCount = Math.floor((items[item].endDate - Date.now()) / (1000*60*60*24));
           if (endDCount===0 && noteCheck===false) {
@@ -48,12 +52,16 @@ loadDB() {
             id: items[item].id,
             text: items[item].text,
             creator: items[item].creator,
+            groupColor: "blue",
+            startDate: items[item].id,
+            endDate: items[item].id,
             key: item,
           });
         }
       }
       for (let item in items) {
-        if(items[item].uid!==firebase.auth().currentUser.uid) {
+//        if(items[item].uid!==firebase.auth().currentUser.uid) {
+        if(items[item].uid!==this.state.cuid) {
           for(let tag in hashTags) {
             if(items[item].text.indexOf(hashTags[tag])!==-1) {
               newHash.push(items[item]);
@@ -68,15 +76,16 @@ loadDB() {
       items: newState,
       hashItems: uniqueHash,
       percentBooked: (Math.floor(datesBooked.length / 30 * 100)),
-      noteSent: noteCheck
+      noteSent: noteCheck,
+      cuid: ((firebase.auth().currentUser !== null) ? firebase.auth().currentUser.uid : "")
     });
   });
 }
 
-  componentDidMount = () => {
 
+  componentDidMount = () => {
     firebase.auth().onAuthStateChanged(user => {
-      this.setState({ isSignedIn: !!user})
+      this.setState({ isSignedIn: !!user, cuid: ((firebase.auth().currentUser !== null) ? firebase.auth().currentUser.uid : "")})
       console.log("user", user)
     })
     if (!("Notification" in window)) {
@@ -87,9 +96,16 @@ loadDB() {
     this.loadDB();
   }
 
+  // componentDidMount() {
+  //   this.loadDB();
+  // }
+
+
+
   componentDidUpdate(prevProps,prevState) {
     if (this.state.isSignedIn !== prevState.isSignedIn) {
       this.loadDB();
+      console.log(firebase.auth().currentUser);
       if(this.state.noteSent) {
         this.showNotification();
       }
@@ -100,7 +116,7 @@ loadDB() {
     this.setState({
       items: this.state.items.filter((x) => x.id !== id )
     });
-    app.database().ref('/text/' + key).remove();
+    FirebaseApp.database().ref('/text/' + key).remove();
   }
 
 
@@ -193,7 +209,7 @@ loadDB() {
     if (this.state.text.length === 0) {
       return;
     }
-    const itemsRef = app.database().ref('text');
+    const itemsRef = FirebaseApp.database().ref('text');
     const newItem = {
       text: this.state.text,
       uid: firebase.auth().currentUser.uid,
